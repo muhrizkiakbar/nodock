@@ -7,6 +7,7 @@ RUN apt-get update && \
         iputils-ping && \
     npm install -g n
 
+
 ##
 ## Timezone
 ##
@@ -33,7 +34,25 @@ RUN npm i -g yarn
 
 COPY ./crontab /var/spool/cron/crontabs
 
+USER root
+
 WORKDIR /opt/app
 
+RUN chmod -R 777 /opt/app
+
+# Add a non-root user to prevent files being created with root permissions on host machine.
+ARG PUID=1000
+ENV PUID ${PUID}
+ARG PGID=1000
+ENV PGID ${PGID}
+
+# always run apt update when start and after add new source list, then clean up at end.
+RUN groupadd -g ${PGID} nodock && \
+    useradd -u ${PUID} -g nodock -m nodock -G doker_env && \
+    usermod -p "*" nodock
+
+RUN chown -R nodock:nodock /opt/app
+
+USER nodock
 
 ENTRYPOINT sleep infinity

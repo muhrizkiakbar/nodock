@@ -31,6 +31,8 @@ RUN if [ ${YARN} = true ]; then \
 
 COPY scripts/run-nodock.sh /usr/bin/run-nodock
 
-RUN chmod 700 /usr/bin/run-nodock
+RUN chmod 777 /usr/bin/run-nodock
+
+USER www-app
 
 WORKDIR /opt/app
